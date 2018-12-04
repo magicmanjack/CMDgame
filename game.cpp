@@ -44,12 +44,14 @@ void update() {
 
 void draw() {
 	// The updated game is then pushed to the console.
+	string output; // The output is stored in a string before being printed. This makes the game look smoother.
 	for(int iy = 0; iy < G_HEIGHT; iy++) {
 		for(int ix = 0; ix < G_WIDTH; ix++) {
-			cout << static_cast<char>(219) << static_cast<char>(219); // Draws grid tiles. CAN BE IMPROVED.
+			output = output + static_cast<char>(219) + static_cast<char>(219); // Draws tiles to string output.
 		}
-		cout << endl;
+		output = output + "\n";
 	}
+	cout << output; // Output is finally sent to the console in one heap.
 }
 
 void displayInput() {
