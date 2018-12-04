@@ -42,7 +42,6 @@ int main() {
 
 void update() {
 	// All game attributes are updated.
-	
 }
 
 void draw() {
