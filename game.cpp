@@ -40,6 +40,7 @@ int main() {
 	return 0;
 }
 
+
 void update() {
 	// All game attributes are updated.
 }
