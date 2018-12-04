@@ -4,11 +4,12 @@
 
 using namespace std;
 
-const int G_WIDTH = 5, G_HEIGHT = 5; // Grid dimensions.
+const int G_WIDTH = 10, G_HEIGHT = 10; // Grid dimensions.
 const int FPS = 2;
 
 void update();
 void draw();
+void displayInput();
 
 struct KeyInfo {
 	char c;
@@ -43,6 +44,15 @@ void update() {
 
 void draw() {
 	// The updated game is then pushed to the console.
+	for(int iy = 0; iy < G_HEIGHT; iy++) {
+		for(int ix = 0; ix < G_WIDTH; ix++) {
+			cout << static_cast<char>(219) << static_cast<char>(219); // Draws grid tiles. CAN BE IMPROVED.
+		}
+		cout << endl;
+	}
+}
+
+void displayInput() {
 	cout << "Key ";
 	if(kInf.pressed) {
 		cout << "pressed";
