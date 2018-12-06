@@ -1,17 +1,22 @@
 #include <iostream>
 #include <conio.h>
 #include <windows.h>
+#include<cmath>
 
 using namespace std;
 
-const int G_WIDTH = 20, G_HEIGHT = 10; // Grid dimensions.
+const int G_WIDTH = 40, G_HEIGHT = 20; // Grid dimensions.
 const int FPS = 2;
 char grid[G_WIDTH][G_HEIGHT];
+
+const int X_ORI = 20, Y_ORI = 19, PI = 3.14159265359; // The origin point of the line as well as a definition for PI.
+int lineTheta = 0; // This is the angle at which the line is pointing from vertical.
 
 void update();
 void draw();
 void displayInput();
 void fillGrid();
+void createLine(int xOrig, int yOrig, int theta);
 
 struct KeyInfo {
 	char c;
@@ -43,6 +48,27 @@ int main() {
 
 void update() {
 	// All game attributes are updated.
+	fillGrid(); // Clears the grid (fills all the same).
+	if(kInf.pressed) {
+		if(kInf.c == 97) { // 'a' pressed.
+			lineTheta+=10; // Adds 10 degress to the angle.
+		}
+		if(kInf.c == 100) { // 'd' pressed.
+			lineTheta-=10; // Subtracts 10 degress from the angle.
+		}
+	}
+	createLine(X_ORI, Y_ORI, lineTheta); // Creates the line on the grid.
+}
+
+void createLine(int xOrig, int yOrig, int theta) {
+	double dx, dy; // The delta from the origin point.
+	for(int iy = 0; iy < G_HEIGHT; iy ++) { // For every section of the grid at Y.
+		dy = iy - yOrig; // Delta Y from the origin Y is calculated.
+		dx = xOrig + round(tan((theta * PI) / 180.0) * dy); // The Delta X is then found using trigonometry.  
+		if(dx >= 0 && dx < G_WIDTH) { // To prevent breaking of array bounderies.
+			grid[static_cast<int>(dx)][iy] = ' '; // Creates empty space which forms part of the line.
+		}
+	}
 }
 
 void draw() {
