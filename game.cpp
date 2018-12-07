@@ -48,7 +48,7 @@ int main() {
 
 void update() {
 	// All game attributes are updated.
-	fillGrid(); // Clears the grid (fills all the same).
+	fillGrid(); // Clears the grid
 	if(kInf.pressed) {
 		if(kInf.c == 97) { // 'a' pressed.
 			lineTheta+=10; // Adds 10 degress to the angle.
@@ -66,7 +66,7 @@ void createLine(int xOrig, int yOrig, int theta) {
 		dy = iy - yOrig; // Delta Y from the origin Y is calculated.
 		dx = xOrig + round(tan((theta * PI) / 180.0) * dy); // The Delta X is then found using trigonometry.  
 		if(dx >= 0 && dx < G_WIDTH) { // To prevent breaking of array bounderies.
-			grid[static_cast<int>(dx)][iy] = ' '; // Creates empty space which forms part of the line.
+			grid[static_cast<int>(dx)][iy] = static_cast<char>(46); // Creates empty space which forms part of the line.
 		}
 	}
 }
@@ -76,10 +76,11 @@ void draw() {
 	string output; // The output is stored in a string before being printed. This makes the game look smoother.
 	//system("color 11");
 	for(int iy = 0; iy < G_HEIGHT; iy++) {
+		output = output + "|";
 		for(int ix = 0; ix < G_WIDTH; ix++) {
 			output = output + grid[ix][iy];
 		}
-		output = output + "\n";
+		output = output + "|\n";
 	}
 	cout << output; // Output is finally sent to the console in one heap.
 }
@@ -87,7 +88,7 @@ void draw() {
 void fillGrid() {
 	for(int iy = 0; iy < G_HEIGHT; iy++) {
 		for(int ix = 0; ix < G_WIDTH; ix++) {
-			grid[ix][iy] = static_cast<char>(219);
+			grid[ix][iy] = ' ';
 		}
 	}
 }
