@@ -63,8 +63,7 @@ void update() {
 		if(kInf.c == 32) {
 			bullets.push_back(Bullet(X_ORI, Y_ORI, lineTheta));
 		}
-	}
-	
+	}	
 	createLine(X_ORI, Y_ORI, lineTheta); // Creates the line on the grid.
 }
 
