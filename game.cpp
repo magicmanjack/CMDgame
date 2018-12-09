@@ -7,7 +7,7 @@
 
 using namespace std;
 
-const int G_WIDTH = 40, G_HEIGHT = 20; // Grid dimensions.
+const int G_WIDTH = 40, G_HEIGHT = 25; // Grid dimensions.
 const int FPS = 2;
 char grid[G_WIDTH][G_HEIGHT];
 
@@ -63,6 +63,9 @@ void update() {
 			Bullet::bullets.push_back(new Bullet(X_ORI, Y_ORI, lineTheta)); // Creates a new bullet.
 		}
 	}
+	if(abs(lineTheta) >= 360) {
+		lineTheta = 0;
+	}
 	createLine(X_ORI, Y_ORI, lineTheta); // Creates the line on the grid.
 	manageBullets();
 }
@@ -90,7 +93,12 @@ void createLine(int xOrig, int yOrig, int theta) {
 		dy = iy - yOrig; // Delta Y from the origin Y is calculated.
 		dx = xOrig + round(tan((theta * PI) / 180.0) * dy); // The Delta X is then found using trigonometry.  
 		if(dx >= 0 && dx < G_WIDTH) { // To prevent breaking of array bounderies.
-			grid[static_cast<int>(dx)][iy] = static_cast<char>(46); // Creates empty space which forms part of the line.
+			if((abs(theta) <= 90 || abs(theta) > 270) && dy <= 0) {
+				grid[static_cast<int>(dx)][iy] = static_cast<char>(46); // Creates empty space which forms part of the line. Only draws the top.
+			}
+			if((abs(theta) > 90 && abs(theta) <= 270) && dy >= 0) {
+				grid[static_cast<int>(dx)][iy] = static_cast<char>(46); // Creates empty space which forms part of the line. Only draws the bottom.
+			}
 		}
 	}
 }
