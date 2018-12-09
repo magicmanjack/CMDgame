@@ -1,7 +1,8 @@
 #include <iostream>
 #include <conio.h>
 #include <windows.h>
-#include<cmath>
+#include <cmath>
+#include <vector>
 #include "bullet.h"
 
 using namespace std;
@@ -18,6 +19,7 @@ void draw();
 void displayInput();
 void fillGrid();
 void createLine(int xOrig, int yOrig, int theta);
+void manageBullets(); 
 
 struct KeyInfo {
 	char c;
@@ -62,11 +64,24 @@ void update() {
 		}
 	}
 	createLine(X_ORI, Y_ORI, lineTheta); // Creates the line on the grid.
-	
+	manageBullets();
+}
+
+void manageBullets() {
+	vector<int> toRemove;
 	for(int i = 0; i < Bullet::bullets.size(); i++) {
-		Bullet::bullets[i] -> update();
-		grid[static_cast<int>(Bullet::bullets[i] -> x)][static_cast<int>(Bullet::bullets[i] -> y)] = Bullet::bullets[i]->c;
+		Bullet *b = Bullet::bullets[i];
+		b -> update();
+		if(b -> x < 0 || b -> x > G_WIDTH || b -> y < 0 || b -> y > G_HEIGHT) { // If the bullet goes outside the grid.
+			toRemove.push_back(i);
+		}else {
+			grid[static_cast<int>(b -> x)][static_cast<int>(b -> y)] = b->c;
+		}
 	}	
+	for(int i = 0; i < toRemove.size(); i++) {
+		delete Bullet::bullets[toRemove[i]]; // Deallocates the memory that is being pointed to.
+		Bullet::bullets.erase(Bullet::bullets.begin() + toRemove[i]); // The pointer is then removed from the list of bullets.
+	}
 }
 
 void createLine(int xOrig, int yOrig, int theta) {
