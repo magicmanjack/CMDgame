@@ -2,7 +2,6 @@
 #include <conio.h>
 #include <windows.h>
 #include<cmath>
-#include<vector>
 #include "bullet.h"
 
 using namespace std;
@@ -13,8 +12,6 @@ char grid[G_WIDTH][G_HEIGHT];
 
 const int X_ORI = 20, Y_ORI = 19, PI = 3.14159265359; // The origin point of the line as well as a definition for PI.
 int lineTheta = 0; // This is the angle at which the line is pointing from vertical.
-
-vector<Bullet> bullets;
 
 void update();
 void draw();
@@ -61,10 +58,15 @@ void update() {
 			lineTheta-=10; // Subtracts 10 degress from the angle.
 		}
 		if(kInf.c == 32) {
-			bullets.push_back(Bullet(X_ORI, Y_ORI, lineTheta));
+			Bullet::bullets.push_back(new Bullet(X_ORI, Y_ORI, lineTheta)); // Creates a new bullet.
 		}
-	}	
+	}
 	createLine(X_ORI, Y_ORI, lineTheta); // Creates the line on the grid.
+	
+	for(int i = 0; i < Bullet::bullets.size(); i++) {
+		Bullet::bullets[i] -> update();
+		grid[static_cast<int>(Bullet::bullets[i] -> x)][static_cast<int>(Bullet::bullets[i] -> y)] = Bullet::bullets[i]->c;
+	}	
 }
 
 void createLine(int xOrig, int yOrig, int theta) {
