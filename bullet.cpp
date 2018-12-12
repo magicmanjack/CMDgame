@@ -14,7 +14,7 @@ Bullet::Bullet(int xOrig, int yOrig, int theta) {
 	c = static_cast<char>(254);
 }
 
-Bullet::update() {
+void Bullet::update() {
 	x += xVel;
 	y += yVel;
 	//std::cout << "xVel: " << xVel << "\nyVel: " << yVel << std::endl;

@@ -4,6 +4,7 @@
 #include <cmath>
 #include <vector>
 #include "bullet.h"
+#include "cloud.h"
 
 using namespace std;
 
