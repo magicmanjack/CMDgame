@@ -5,6 +5,7 @@
 #include <vector>
 #include "bullet.h"
 #include "cloud.h"
+#include "cloudSpwn.h"
 
 using namespace std;
 
