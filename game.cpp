@@ -3,6 +3,7 @@
 #include <windows.h>
 #include <cmath>
 #include <vector>
+#include <sstream>
 #include "bullet.h"
 #include "cloud.h"
 #include "cloudSpwn.h"
@@ -16,6 +17,8 @@ char grid[G_WIDTH][G_HEIGHT];
 const int X_ORI = 20, Y_ORI = 19, PI = 3.14159265359; // The origin point of the line as well as a definition for PI.
 int lineTheta = 0; // This is the angle at which the line is pointing from vertical.
 CloudSpwn spwn(16); // Cloud spawner obj.
+
+int score = 0;
 
 void update();
 void draw();
@@ -87,7 +90,7 @@ void manageClouds() { // Manages all cloud activity.
 			for(int ix = 0; ix < Cloud::A_WIDTH; ix++) {
 				for(int iy = 0; iy < Cloud::A_HEIGHT; iy++) {
 					if(!((c[i] -> x) + ix >= G_WIDTH) && !((c[i] -> x) + ix < 0)) {
-						grid[(c[i] -> x) + ix][(c[i] -> y) + iy] = Cloud::art[ix][iy]; // The cloud is drawn to the grid.
+						grid[(c[i] -> x) + ix][(c[i] -> y) + iy] = c[i] -> art[ix][iy]; // The cloud is drawn to the grid.
 					}
 				}
 			}
@@ -107,12 +110,17 @@ void manageBullets() {
 		if(b -> x < 0 || b -> x > G_WIDTH || b -> y < 0 || b -> y > G_HEIGHT) { // If the bullet goes outside the grid.
 			toRemove.push_back(i);
 		}else {
+			if(grid[static_cast<int>(b -> x)][static_cast<int>(b -> y)] == static_cast<char>(157)) {
+				score++;
+				toRemove.push_back(i);
+				b -> c = '#';
+			}
 			grid[static_cast<int>(b -> x)][static_cast<int>(b -> y)] = b->c;
 		}
 	}	
 	for(int i = 0; i < toRemove.size(); i++) {
-		delete Bullet::bullets[toRemove[i]]; // Deallocates the memory that is being pointed to.
-		Bullet::bullets.erase(Bullet::bullets.begin() + toRemove[i]); // The pointer is then removed from the list of bullets.
+		delete Bullet::bullets[toRemove[(toRemove.size() - 1) - i]]; // Deallocates the memory that is being pointed to.
+		Bullet::bullets.erase(Bullet::bullets.begin() + toRemove[(toRemove.size() - 1) - i]); // The pointer is then removed from the list of bullets.
 	}
 }
 
@@ -134,16 +142,17 @@ void createLine(int xOrig, int yOrig, int theta) {
 
 void draw() {
 	// The updated game is then pushed to the console.
-	string output; // The output is stored in a string before being printed. This makes the game look smoother.
+	ostringstream oss; // The output is put into a string stream before being printed. This makes the game look smoother.
 	//system("color 11");
 	for(int iy = 0; iy < G_HEIGHT; iy++) {
-		output = output + "|";
+		oss << "|";
 		for(int ix = 0; ix < G_WIDTH; ix++) {
-			output = output + grid[ix][iy];
+			oss << grid[ix][iy];
 		}
-		output = output + "|\n";
+		oss << "|\n";
 	}
-	cout << output; // Output is finally sent to the console in one heap.
+	oss << "Score: " << score;
+	cout << oss.str(); // Output is finally sent to the console in one heap.
 }
 
 void fillGrid() {
