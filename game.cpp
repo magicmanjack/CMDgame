@@ -15,12 +15,14 @@ char grid[G_WIDTH][G_HEIGHT];
 
 const int X_ORI = 20, Y_ORI = 19, PI = 3.14159265359; // The origin point of the line as well as a definition for PI.
 int lineTheta = 0; // This is the angle at which the line is pointing from vertical.
+CloudSpwn spwn(16); // Cloud spawner obj.
 
 void update();
 void draw();
 void displayInput();
 void fillGrid();
 void createLine(int xOrig, int yOrig, int theta);
+void manageClouds();
 void manageBullets(); 
 
 struct KeyInfo {
@@ -69,7 +71,32 @@ void update() {
 		lineTheta = 0;
 	}
 	createLine(X_ORI, Y_ORI, lineTheta); // Creates the line on the grid.
+	manageClouds();
 	manageBullets();
+}
+
+void manageClouds() { // Manages all cloud activity.
+	spwn.update();
+	vector<Cloud*> c = Cloud::clouds;
+	vector<int> toRemove; // Contains the index of elements that are to be removed.
+	for(int i = 0; i < c.size(); i++) {
+		c[i] -> update(); // Updates the cloud.
+		if(c[i] -> x >= G_WIDTH) { // If the clouds exit the screen boundaries.
+			toRemove.push_back(i);
+		} else {
+			for(int ix = 0; ix < Cloud::A_WIDTH; ix++) {
+				for(int iy = 0; iy < Cloud::A_HEIGHT; iy++) {
+					if(!((c[i] -> x) + ix >= G_WIDTH) && !((c[i] -> x) + ix < 0)) {
+						grid[(c[i] -> x) + ix][(c[i] -> y) + iy] = Cloud::art[ix][iy]; // The cloud is drawn to the grid.
+					}
+				}
+			}
+		}
+	}
+	for(int i = 0; i < toRemove.size(); i++) {
+		delete c[toRemove[(toRemove.size() - 1) - i]]; // Deallocates the memory pointed to.
+		Cloud::clouds.erase(Cloud::clouds.begin() + toRemove[(toRemove.size() - 1) - i]); // Erases the element from the vector list.
+	}
 }
 
 void manageBullets() {

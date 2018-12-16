@@ -1,7 +1,7 @@
 class CloudSpwn {
 
 	public:
-		CloudSpwn();
+		CloudSpwn(int delay);
 		void update();
-	
+		int delay, elapsed;
 };
