@@ -13,7 +13,9 @@ Cloud::Cloud() {
 	y = rand() % (range + 1); // Creates random y position between 0 and range;
 	speed = 1;
 	srand(time(NULL));
-	Cloud::art[rand() % A_WIDTH][rand() % A_HEIGHT] = static_cast<char>(157);
+	targetX = rand() % A_WIDTH;
+	targetY = rand() % A_HEIGHT;
+	Cloud::art[targetX][targetY] = static_cast<char>(157); // Creates a target on the cloud.
 }
 
 void Cloud::update() {

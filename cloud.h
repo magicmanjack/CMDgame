@@ -7,7 +7,7 @@ class Cloud {
 	public:
 		Cloud();
 		void update();
-		int x, y, speed;
+		int x, y, speed, targetX, targetY;
 		static std::vector<Cloud*> clouds;
 		static int range;
 		const static int A_WIDTH = 7, A_HEIGHT = 2;

@@ -17,6 +17,7 @@ char grid[G_WIDTH][G_HEIGHT];
 const int X_ORI = 20, Y_ORI = 19, PI = 3.14159265359; // The origin point of the line as well as a definition for PI.
 int lineTheta = 0; // This is the angle at which the line is pointing from vertical.
 CloudSpwn spwn(16); // Cloud spawner obj.
+vector<int> collisions; // Keeps track of all the collisions in the map.
 
 int score = 0;
 
@@ -83,6 +84,16 @@ void manageClouds() { // Manages all cloud activity.
 	vector<Cloud*> c = Cloud::clouds;
 	vector<int> toRemove; // Contains the index of elements that are to be removed.
 	for(int i = 0; i < c.size(); i++) {
+		for(int j = 0; j < collisions.size(); j++) {
+			if(j % 2 == 0) {
+				if((c[i] -> x) + (c[i] -> targetX) == collisions[j] && (c[i] -> y) + (c[i] -> targetY) == collisions[j + 1]) {
+					c[i] -> art[c[i] -> targetX][c[i] -> targetY] = ' ';
+					collisions.erase(collisions.begin() + j); // Erases X element.
+					collisions.erase(collisions.begin() + j); // Erases Y element.
+					j -= 2; // Sets back index because of the changed order of the vector.
+				}
+			}
+		}
 		c[i] -> update(); // Updates the cloud.
 		if(c[i] -> x >= G_WIDTH) { // If the clouds exit the screen boundaries.
 			toRemove.push_back(i);
@@ -114,6 +125,8 @@ void manageBullets() {
 				score++;
 				toRemove.push_back(i);
 				b -> c = '#';
+				collisions.push_back(static_cast<int>(b -> x));
+				collisions.push_back(static_cast<int>(b -> y));
 			}
 			grid[static_cast<int>(b -> x)][static_cast<int>(b -> y)] = b->c;
 		}
