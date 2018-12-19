@@ -7,6 +7,7 @@
 #include "bullet.h"
 #include "cloud.h"
 #include "cloudSpwn.h"
+#include "snow.h"
 
 using namespace std;
 
@@ -16,9 +17,12 @@ char grid[G_WIDTH][G_HEIGHT];
 
 const int X_ORI = 20, Y_ORI = 19, PI = 3.14159265359; // The origin point of the line as well as a definition for PI.
 int lineTheta = 0; // This is the angle at which the line is pointing from vertical.
-CloudSpwn spwn(16); // Cloud spawner obj.
+CloudSpwn spwn(17); // Cloud spawner obj.
 vector<int> collisions; // Keeps track of all the collisions in the map.
 
+bool reloading = false;
+const int RLD_TIME = 4; // The amount of time in updates that the cannon reloads.
+int rldTimeElapsed = 0;
 int score = 0;
 
 void update();
@@ -28,6 +32,7 @@ void fillGrid();
 void createLine(int xOrig, int yOrig, int theta);
 void manageClouds();
 void manageBullets(); 
+void manageSnow();
 
 struct KeyInfo {
 	char c;
@@ -67,19 +72,28 @@ void update() {
 		if(kInf.c == 100) { // 'd' pressed.
 			lineTheta-=10; // Subtracts 10 degress from the angle.
 		}
-		if(kInf.c == 32) {
+		if(kInf.c == 32 && !reloading) {
 			Bullet::bullets.push_back(new Bullet(X_ORI, Y_ORI, lineTheta)); // Creates a new bullet.
+			reloading = true;
 		}
 	}
 	if(abs(lineTheta) >= 360) {
 		lineTheta = 0;
 	}
-	createLine(X_ORI, Y_ORI, lineTheta); // Creates the line on the grid.
+	if(!reloading) {
+		createLine(X_ORI, Y_ORI, lineTheta); // Creates the line on the grid.
+	}
 	manageClouds();
 	manageBullets();
+	manageSnow();
 }
 
 void manageClouds() { // Manages all cloud activity.
+	rldTimeElapsed++;
+	if(rldTimeElapsed >= RLD_TIME) {
+		rldTimeElapsed = 0;
+		reloading = false;
+	}
 	spwn.update();
 	vector<Cloud*> c = Cloud::clouds;
 	vector<int> toRemove; // Contains the index of elements that are to be removed.
@@ -135,6 +149,23 @@ void manageBullets() {
 		delete Bullet::bullets[toRemove[(toRemove.size() - 1) - i]]; // Deallocates the memory that is being pointed to.
 		Bullet::bullets.erase(Bullet::bullets.begin() + toRemove[(toRemove.size() - 1) - i]); // The pointer is then removed from the list of bullets.
 	}
+}
+
+void manageSnow() {
+	vector<Snow*> snw = Snow::fallingSnow;
+	vector<int> toRemove;
+	for(int i = 0; i < snw.size(); i++) {
+		snw[i] -> update();
+		if(snw[i] -> x < 0 || snw[i] -> x >= G_WIDTH || snw[i] -> y < 0 || snw[i] -> y >= G_HEIGHT) {
+			toRemove.push_back(i);
+		}else {
+			grid[snw[i] -> x][snw[i] -> y] = Snow::c;
+		}
+	}
+	for(int i = 0; i < toRemove.size(); i++) {
+		delete snw[toRemove[(toRemove.size() - 1) - i]];
+		Snow::fallingSnow.erase(Snow::fallingSnow.begin() + toRemove[(toRemove.size() - 1) - i]);
+	} // Possibly a more efficient way would be: while(toRemove.size() > 0) { delete first element }
 }
 
 void createLine(int xOrig, int yOrig, int theta) {
