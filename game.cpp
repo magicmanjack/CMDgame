@@ -19,12 +19,14 @@ const int X_ORI = 20, Y_ORI = 19, PI = 3.14159265359; // The origin point of the
 int lineTheta = 0; // This is the angle at which the line is pointing from vertical.
 CloudSpwn spwn(17); // Cloud spawner obj.
 vector<int> collisions; // Keeps track of all the collisions in the map.
+int floorHeight[G_WIDTH]; // The floor heights across the X-axis.
 
 bool reloading = false;
 const int RLD_TIME = 4; // The amount of time in updates that the cannon reloads.
 int rldTimeElapsed = 0;
 int score = 0;
 
+void setLevelFloor(int height);
 void update();
 void draw();
 void displayInput();
@@ -42,6 +44,7 @@ struct KeyInfo {
 int main() {
 	bool loop = true;
 	fillGrid();
+	setLevelFloor(G_HEIGHT - 1);
 	while(loop) {
 		if(kbhit()) { 
 			kInf.pressed = true;
@@ -60,7 +63,6 @@ int main() {
 	}
 	return 0;
 }
-
 
 void update() {
 	// All game attributes are updated.
@@ -155,11 +157,19 @@ void manageSnow() {
 	vector<Snow*> snw = Snow::fallingSnow;
 	vector<int> toRemove;
 	for(int i = 0; i < snw.size(); i++) {
-		snw[i] -> update();
+		if(snw[i] -> y >= floorHeight[snw[i] -> x]) {
+			snw[i] -> harden();
+			floorHeight[snw[i] -> x] = (snw[i] -> y) - 1; // Updates the floor height.
+		} 
+		if(((snw[i] -> fallSpd) > 1) && (snw[i] -> y) + (snw[i] -> fallSpd) >= floorHeight[snw[i] -> x]) {
+			snw[i] -> y = floorHeight[snw[i] -> x]; // Snaps to position.
+		} else {
+			snw[i] -> update();
+		}
 		if(snw[i] -> x < 0 || snw[i] -> x >= G_WIDTH || snw[i] -> y < 0 || snw[i] -> y >= G_HEIGHT) {
 			toRemove.push_back(i);
 		}else {
-			grid[snw[i] -> x][snw[i] -> y] = Snow::c;
+			grid[snw[i] -> x][snw[i] -> y] = snw[i] -> c;
 		}
 	}
 	for(int i = 0; i < toRemove.size(); i++) {
@@ -204,6 +214,12 @@ void fillGrid() {
 		for(int ix = 0; ix < G_WIDTH; ix++) {
 			grid[ix][iy] = ' ';
 		}
+	}
+}
+
+void setLevelFloor(int height) {
+	for(int i = 0; i < G_WIDTH; i++) {
+		floorHeight[i] = height;
 	}
 }
 
