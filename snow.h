@@ -9,5 +9,4 @@ class Snow {
 		char c;
 		Snow(int x, int y);
 		void update();
-		void harden();
 };

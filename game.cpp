@@ -35,6 +35,7 @@ void createLine(int xOrig, int yOrig, int theta);
 void manageClouds();
 void manageBullets(); 
 void manageSnow();
+bool collides(int x, int y);
 
 struct KeyInfo {
 	char c;
@@ -100,15 +101,8 @@ void manageClouds() { // Manages all cloud activity.
 	vector<Cloud*> c = Cloud::clouds;
 	vector<int> toRemove; // Contains the index of elements that are to be removed.
 	for(int i = 0; i < c.size(); i++) {
-		for(int j = 0; j < collisions.size(); j++) {
-			if(j % 2 == 0) {
-				if((c[i] -> x) + (c[i] -> targetX) == collisions[j] && (c[i] -> y) + (c[i] -> targetY) == collisions[j + 1]) {
-					c[i] -> art[c[i] -> targetX][c[i] -> targetY] = ' ';
-					collisions.erase(collisions.begin() + j); // Erases X element.
-					collisions.erase(collisions.begin() + j); // Erases Y element.
-					j -= 2; // Sets back index because of the changed order of the vector.
-				}
-			}
+		if(collides((c[i] -> x) + (c[i] -> targetX), (c[i] -> y) + (c[i] -> targetY))) {
+			c[i] -> art[c[i] -> targetX][c[i] -> targetY] = ' ';
 		}
 		c[i] -> update(); // Updates the cloud.
 		if(c[i] -> x >= G_WIDTH) { // If the clouds exit the screen boundaries.
@@ -137,7 +131,8 @@ void manageBullets() {
 		if(b -> x < 0 || b -> x > G_WIDTH || b -> y < 0 || b -> y > G_HEIGHT) { // If the bullet goes outside the grid.
 			toRemove.push_back(i);
 		}else {
-			if(grid[static_cast<int>(b -> x)][static_cast<int>(b -> y)] == static_cast<char>(157)) {
+			char chTouching = grid[static_cast<int>(b -> x)][static_cast<int>(b -> y)];
+			if(chTouching == static_cast<char>(157)) {
 				score++;
 				toRemove.push_back(i);
 				b -> c = '#';
@@ -157,9 +152,13 @@ void manageSnow() {
 	vector<Snow*> snw = Snow::fallingSnow;
 	vector<int> toRemove;
 	for(int i = 0; i < snw.size(); i++) {
-		if(snw[i] -> y >= floorHeight[snw[i] -> x]) {
-			snw[i] -> harden();
-			floorHeight[snw[i] -> x] = (snw[i] -> y) - 1; // Updates the floor height.
+		if(snw[i] -> y == floorHeight[snw[i] -> x]) {
+			snw[i] -> fallSpd = 0;
+			snw[i] -> c = static_cast<char>(220);
+			if(grid[snw[i] -> x][floorHeight[snw[i] -> x]] == static_cast<char>(220)) {
+				snw[i] -> c = static_cast<char>(219);
+				floorHeight[snw[i] -> x] = (snw[i] -> y) - 1; // Updates the floor height.
+			}
 		} 
 		if(((snw[i] -> fallSpd) > 1) && (snw[i] -> y) + (snw[i] -> fallSpd) >= floorHeight[snw[i] -> x]) {
 			snw[i] -> y = floorHeight[snw[i] -> x]; // Snaps to position.
@@ -221,6 +220,21 @@ void setLevelFloor(int height) {
 	for(int i = 0; i < G_WIDTH; i++) {
 		floorHeight[i] = height;
 	}
+}
+
+bool collides(int x, int y) {
+	bool collision = false;
+	for(int j = 0; j < collisions.size(); j++) {
+			if(j % 2 == 0) {
+				if(x == collisions[j] && y == collisions[j + 1]) {
+					collisions.erase(collisions.begin() + j); // Erases X element.
+					collisions.erase(collisions.begin() + j); // Erases Y element.
+					j -= 2; // Sets back index because of the changed order of the vector.
+					collision = true;
+				}
+			}
+	}
+	return collision;
 }
 
 void displayInput() {

@@ -15,8 +15,3 @@ Snow::Snow(int x, int y) {
 void Snow::update() {
 	y += fallSpd;
 }
-
-void Snow::harden() {
-	fallSpd = 0;
-	c = static_cast<char>(219);
-}
