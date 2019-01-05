@@ -15,8 +15,8 @@ const int G_WIDTH = 40, G_HEIGHT = 25; // Grid dimensions.
 const int FPS = 2;
 char grid[G_WIDTH][G_HEIGHT];
 
-const int X_ORI = 20, Y_ORI = 19, PI = 3.14159265359; // The origin point of the line as well as a definition for PI.
-int lineTheta = 0; // This is the angle at which the line is pointing from vertical.
+const int PI = 3.14159265359; // A definition for PI.
+int lineTheta = 0, xOri = 20, yOri = 19, speed = 2; // This is the angle at which the line is pointing from vertical as well as the origin point of the line. The speed is the speed that the turret can move.
 CloudSpwn spwn(17); // Cloud spawner obj.
 vector<int> collisions; // Keeps track of all the collisions in the map.
 int floorHeight[G_WIDTH]; // The floor heights across the X-axis.
@@ -31,7 +31,7 @@ void update();
 void draw();
 void displayInput();
 void fillGrid();
-void createLine(int xOrig, int yOrig, int theta);
+void createLine(int xOri, int yOri, int theta);
 void manageClouds();
 void manageBullets(); 
 void manageSnow();
@@ -75,8 +75,14 @@ void update() {
 		if(kInf.c == 100) { // 'd' pressed.
 			lineTheta-=10; // Subtracts 10 degress from the angle.
 		}
+		if(kInf.c == 102 && xOri - speed >= 0) { // 'f' pressed.
+			xOri-=speed;
+		}
+		if(kInf.c == 103 && xOri + speed < G_WIDTH) { // 'g' pressed.
+			xOri+=speed;
+		}
 		if(kInf.c == 32 && !reloading) {
-			Bullet::bullets.push_back(new Bullet(X_ORI, Y_ORI, lineTheta)); // Creates a new bullet.
+			Bullet::bullets.push_back(new Bullet(xOri, yOri, lineTheta)); // Creates a new bullet.
 			reloading = true;
 		}
 	}
@@ -84,7 +90,7 @@ void update() {
 		lineTheta = 0;
 	}
 	if(!reloading) {
-		createLine(X_ORI, Y_ORI, lineTheta); // Creates the line on the grid.
+		createLine(xOri, yOri, lineTheta); // Creates the line on the grid.
 	}
 	manageClouds();
 	manageSnow();
@@ -196,11 +202,11 @@ void manageSnow() {
 	} // Possibly a more efficient way would be: while(toRemove.size() > 0) { delete first element }
 }
 
-void createLine(int xOrig, int yOrig, int theta) {
+void createLine(int xOri, int yOri, int theta) {
 	double dx, dy; // The delta from the origin point.
 	for(int iy = 0; iy < G_HEIGHT; iy ++) { // For every section of the grid at Y.
-		dy = iy - yOrig; // Delta Y from the origin Y is calculated.
-		dx = xOrig + round(tan((theta * PI) / 180.0) * dy); // The Delta X is then found using trigonometry.  
+		dy = iy - yOri; // Delta Y from the origin Y is calculated.
+		dx = xOri + round(tan((theta * PI) / 180.0) * dy); // The Delta X is then found using trigonometry.  
 		if(dx >= 0 && dx < G_WIDTH) { // To prevent breaking of array bounderies.
 			if((abs(theta) <= 90 || abs(theta) > 270) && dy <= 0) {
 				grid[static_cast<int>(dx)][iy] = static_cast<char>(46); // Creates empty space which forms part of the line. Only draws the top.
