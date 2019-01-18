@@ -14,6 +14,12 @@ using namespace std;
 const int G_WIDTH = 40, G_HEIGHT = 25; // Grid dimensions.
 const int FPS = 2;
 char grid[G_WIDTH][G_HEIGHT];
+bool gameOver;
+
+const int PLYR_LOCAL_X = -1, PLYR_LOCAL_Y = -1; // The player X and Y relative to the xOri and yOri.
+const int PLYR_WIDTH = 3, PLYR_HEIGHT = 3; // The player sprite width and height.
+char plyrSprite[3][3] = {{'#', '#', '#'}, {'#', '#', '#'}, {'#', '#', '#'}};
+const int HBOX_WIDTH = 1, HBOX_HEIGHT = 1; // Hitbox width and height (extruding from the player X and Y). 
 
 const int PI = 3.14159265359; // A definition for PI.
 int lineTheta = 0, xOri = 20, yOri = 19, speed = 2; // This is the angle at which the line is pointing from vertical as well as the origin point of the line. The speed is the speed that the turret can move.
@@ -35,6 +41,8 @@ void createLine(int xOri, int yOri, int theta);
 void manageClouds();
 void manageBullets(); 
 void manageSnow();
+void drawPlyr();
+void reset();
 bool collides(int x, int y);
 
 struct KeyInfo {
@@ -44,6 +52,7 @@ struct KeyInfo {
 
 int main() {
 	bool loop = true;
+	gameOver = false;
 	fillGrid();
 	setLevelFloor(G_HEIGHT - 1);
 	while(loop) {
@@ -57,10 +66,27 @@ int main() {
 		} else {
 			kInf.pressed = false;
 		}
-		update();
-		system("CLS");
-		draw();
-		Sleep(1000 / FPS);
+		if(!gameOver) {
+			update();
+			system("CLS");
+			draw();
+			Sleep(1000 / FPS);
+		} else {
+			fillGrid();
+			grid[10][10] = 'G';
+			grid[11][10] = 'A';
+			grid[12][10] = 'M';
+			grid[13][10] = 'E';
+			grid[15][10] = 'O';
+			grid[16][10] = 'V';
+			grid[17][10] = 'E';
+			grid[18][10] = 'R';
+			system("CLS");
+			draw();
+			cout << "\n\n";
+			system("pause");
+			reset();
+		}
 	}
 	return 0;
 }
@@ -95,6 +121,7 @@ void update() {
 	manageClouds();
 	manageSnow();
 	manageBullets();
+	drawPlyr();
 }
 
 void manageClouds() { // Manages all cloud activity.
@@ -195,6 +222,10 @@ void manageSnow() {
 				grid[snw[i] -> x][snw[i] -> y] = snw[i] -> c;
 			}
 		}
+		if((snw[i] -> x) >= xOri - HBOX_WIDTH && (snw[i] -> x) <= xOri + HBOX_WIDTH && (snw[i] -> y) >= yOri - HBOX_HEIGHT && (snw[i] -> y) <= yOri + HBOX_HEIGHT) {
+			toRemove.push_back(i);
+			gameOver = true;
+		}
 	}
 	for(int i = 0; i < toRemove.size(); i++) {
 		delete snw[toRemove[(toRemove.size() - 1) - i]];
@@ -213,6 +244,19 @@ void createLine(int xOri, int yOri, int theta) {
 			}
 			if((abs(theta) > 90 && abs(theta) <= 270) && dy >= 0) {
 				grid[static_cast<int>(dx)][iy] = static_cast<char>(46); // Creates empty space which forms part of the line. Only draws the bottom.
+			}
+		}
+	}
+}
+
+void drawPlyr() {
+	for(int ix = 0; ix < PLYR_WIDTH; ix++) {
+		for(int iy = 0; iy < PLYR_HEIGHT; iy++) {
+			int trueX = xOri + ix + PLYR_LOCAL_X;
+			int trueY = yOri + iy + PLYR_LOCAL_Y;
+			
+			if(trueX >= 0 && trueX < G_WIDTH && trueY >= 0 && trueY < G_HEIGHT) {
+				grid[trueX][trueY] = plyrSprite[ix][iy];
 			}
 		}
 	}
@@ -260,6 +304,15 @@ bool collides(int x, int y) {
 			}
 	}
 	return collision;
+}
+
+void reset() {
+	xOri = 20;
+	yOri = 19;
+	score = 0;
+	Cloud::clouds.clear();
+	Snow::fallingSnow.clear();
+	gameOver = false;
 }
 
 void displayInput() {
