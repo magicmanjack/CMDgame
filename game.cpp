@@ -43,6 +43,7 @@ void manageBullets();
 void manageSnow();
 void drawPlyr();
 void reset();
+void displayText(string s, int x, int y);
 bool collides(int x, int y);
 
 struct KeyInfo {
@@ -55,6 +56,11 @@ int main() {
 	gameOver = false;
 	fillGrid();
 	setLevelFloor(G_HEIGHT - 1);
+	
+	// Intro screen goes here...
+	
+	//
+	
 	while(loop) {
 		if(kbhit()) { 
 			kInf.pressed = true;
@@ -62,6 +68,8 @@ int main() {
 			// Key press checking.
 			if(kInf.c == 27) { // A char with the value of 27 is ESC.
 				loop = false; // ESC exits the gameloop and closes the game.
+			} else if(gameOver) {
+				reset();
 			}
 		} else {
 			kInf.pressed = false;
@@ -71,21 +79,6 @@ int main() {
 			system("CLS");
 			draw();
 			Sleep(1000 / FPS);
-		} else {
-			fillGrid();
-			grid[10][10] = 'G';
-			grid[11][10] = 'A';
-			grid[12][10] = 'M';
-			grid[13][10] = 'E';
-			grid[15][10] = 'O';
-			grid[16][10] = 'V';
-			grid[17][10] = 'E';
-			grid[18][10] = 'R';
-			system("CLS");
-			draw();
-			cout << "\n\n";
-			system("pause");
-			reset();
 		}
 	}
 	return 0;
@@ -122,6 +115,13 @@ void update() {
 	manageSnow();
 	manageBullets();
 	drawPlyr();
+	
+	if(gameOver) {
+		fillGrid();
+		displayText("GAME OVER", 15, 12);
+		system("CLS");
+		draw();
+	}
 }
 
 void manageClouds() { // Manages all cloud activity.
@@ -323,5 +323,13 @@ void displayInput() {
 		cout << "released";
 	}
 	cout << ", Key num: " << static_cast<int>(kInf.c) << endl;
+}
+
+void displayText(string s, int x, int y) {
+	for(int i = 0; i < s.length(); i++) {
+		if(x + i >= 0 && x + i < G_WIDTH && y >= 0 && y < G_HEIGHT) {
+			grid[x + i][y] = s[i];
+		}
+	}
 }
 	
