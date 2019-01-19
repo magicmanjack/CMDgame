@@ -192,20 +192,6 @@ void manageBullets() {
 				collisions.push_back(static_cast<int>(b -> x));
 				collisions.push_back(static_cast<int>(b -> y));
 			}
-			if(chTouching == static_cast<char>(219)) {
-				toRemove.push_back(i);
-				b -> c = '#';
-				collisions.push_back(static_cast<int>(b -> x));
-				collisions.push_back(static_cast<int>(b -> y));
-				collisions.push_back(static_cast<int>(b -> x));
-				collisions.push_back(static_cast<int>(b -> y));
-			}
-			if(chTouching == static_cast<char>(220)) {
-				toRemove.push_back(i);
-				b -> c = '#';
-				collisions.push_back(static_cast<int>(b -> x));
-				collisions.push_back(static_cast<int>(b -> y));
-			}
 			grid[static_cast<int>(b -> x)][static_cast<int>(b -> y)] = b->c;
 		}
 	}	
@@ -219,28 +205,23 @@ void manageSnow() {
 	vector<Snow*> snw = Snow::fallingSnow;
 	vector<int> toRemove;
 	for(int i = 0; i < snw.size(); i++) {
-		if(collides(snw[i] -> x, snw[i] -> y) && snw[i] -> fallSpd == 0) {
-			toRemove.push_back(i);
-			snw[i] -> c = ' ';
+		if(snw[i] -> y == floorHeight[snw[i] -> x]) {
+			snw[i] -> fallSpd = 0;
+			snw[i] -> c = static_cast<char>(220);
+			if(grid[snw[i] -> x][floorHeight[snw[i] -> x]] == static_cast<char>(220)) {
+				snw[i] -> c = static_cast<char>(219);
+				floorHeight[snw[i] -> x] = (snw[i] -> y) - 1; // Updates the floor height.
+			}
+		} 
+		if(((snw[i] -> fallSpd) > 1) && (snw[i] -> y) + (snw[i] -> fallSpd) >= floorHeight[snw[i] -> x]) {
+			snw[i] -> y = floorHeight[snw[i] -> x]; // Snaps to position.
 		} else {
-			if(snw[i] -> y == floorHeight[snw[i] -> x]) {
-				snw[i] -> fallSpd = 0;
-				snw[i] -> c = static_cast<char>(220);
-				if(grid[snw[i] -> x][floorHeight[snw[i] -> x]] == static_cast<char>(220)) {
-					snw[i] -> c = static_cast<char>(219);
-					floorHeight[snw[i] -> x] = (snw[i] -> y) - 1; // Updates the floor height.
-				}
-			} 
-			if(((snw[i] -> fallSpd) > 1) && (snw[i] -> y) + (snw[i] -> fallSpd) >= floorHeight[snw[i] -> x]) {
-				snw[i] -> y = floorHeight[snw[i] -> x]; // Snaps to position.
-			} else {
-				snw[i] -> update();
-			}
-			if(snw[i] -> x < 0 || snw[i] -> x >= G_WIDTH || snw[i] -> y < 0 || snw[i] -> y >= G_HEIGHT) {
-				toRemove.push_back(i);
-			} else {
-				grid[snw[i] -> x][snw[i] -> y] = snw[i] -> c;
-			}
+			snw[i] -> update();
+		}
+		if(snw[i] -> x < 0 || snw[i] -> x >= G_WIDTH || snw[i] -> y < 0 || snw[i] -> y >= G_HEIGHT) {
+			toRemove.push_back(i);
+		} else {
+			grid[snw[i] -> x][snw[i] -> y] = snw[i] -> c;
 		}
 		if((snw[i] -> x) >= xOri - HBOX_WIDTH && (snw[i] -> x) <= xOri + HBOX_WIDTH && (snw[i] -> y) >= yOri - HBOX_HEIGHT && (snw[i] -> y) <= yOri + HBOX_HEIGHT) {
 			toRemove.push_back(i);
