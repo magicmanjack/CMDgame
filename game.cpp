@@ -155,6 +155,7 @@ void manageClouds() { // Manages all cloud activity.
 	for(int i = 0; i < c.size(); i++) {
 		if(collides((c[i] -> x) + (c[i] -> targetX), (c[i] -> y) + (c[i] -> targetY))) {
 			c[i] -> art[c[i] -> targetX][c[i] -> targetY] = ' ';
+			c[i] -> disabled = true;
 		}
 		c[i] -> update(); // Updates the cloud.
 		if(c[i] -> x >= G_WIDTH) { // If the clouds exit the screen boundaries.
@@ -331,6 +332,7 @@ void reset() {
 	score = 0;
 	Cloud::clouds.clear();
 	Snow::fallingSnow.clear();
+	Bullet::bullets.clear();
 	gameOver = false;
 }
 

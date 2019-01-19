@@ -23,7 +23,7 @@ Cloud::Cloud() {
 void Cloud::update() {
 	x += speed;
 	elapsed++;
-	if(elapsed >= (rand() % 6) - 2 + SNOW_DELAY && x >= 0) {
+	if(elapsed >= (rand() % 6) - 2 + SNOW_DELAY && x >= 0 && !disabled) {
 		elapsed = 0;
 		Snow::fallingSnow.push_back(new Snow((rand() % A_WIDTH) + x, y + A_HEIGHT - 1));
 	}
