@@ -18,7 +18,7 @@ bool gameOver;
 
 const int PLYR_LOCAL_X = -1, PLYR_LOCAL_Y = -1; // The player X and Y relative to the xOri and yOri.
 const int PLYR_WIDTH = 3, PLYR_HEIGHT = 3; // The player sprite width and height.
-char plyrSprite[3][3] = {{'#', '#', '#'}, {'#', '#', '#'}, {'#', '#', '#'}};
+char plyrSprite[3][3] = {{' ', '/', '='}, {'_', 'o', '='}, {' ', '\\', '='}};
 const int HBOX_WIDTH = 1, HBOX_HEIGHT = 1; // Hitbox width and height (extruding from the player X and Y). 
 
 const int PI = 3.14159265359; // A definition for PI.
@@ -46,6 +46,25 @@ void reset();
 void displayText(string s, int x, int y);
 bool collides(int x, int y);
 
+void showIntro() {
+	displayText("MISSION: TERMINATE ANY SNOW SPAWNERS", 2, 2);
+	displayText("SPOTTED IN THE CLOUDS. THE SHIPS WEAK", 2, 3);
+	displayText("SHEILDING MEANS AVOID FALLING HAIL!", 2, 4);
+	string s = "TARGET: ";
+	s += static_cast<char>(157);
+	displayText(s , 2, 6);
+	displayText("   __", 0, 10);
+	displayText("  /  \\ -> CONTROL TURRET WITH A AND D", 0, 11);
+	displayText(" /  _ \\           -> SHOOT WITH SPACE", 0, 12);
+	displayText(" | (%)|", 0, 13);
+	displayText(" |    | -> SIDE THRUSTERS F AND G", 0, 14);
+	displayText(" ======", 0, 15);
+	displayText("(ESC IS TO ABORT MISSION)", 0, 17);
+	draw();
+	cout << "\n\n";
+	system("pause");
+}
+
 struct KeyInfo {
 	char c;
 	bool pressed;
@@ -58,7 +77,7 @@ int main() {
 	setLevelFloor(G_HEIGHT - 1);
 	
 	// Intro screen goes here...
-	
+	showIntro();
 	//
 	
 	while(loop) {
