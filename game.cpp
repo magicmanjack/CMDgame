@@ -175,7 +175,9 @@ void manageClouds() { // Manages all cloud activity.
 }
 
 void manageBullets() {
-	rldTimeElapsed++;
+	if(reloading) {
+		rldTimeElapsed++;
+	}
 	if(rldTimeElapsed >= RLD_TIME) {
 		rldTimeElapsed = 0;
 		reloading = false;
