@@ -84,6 +84,9 @@ int main() {
 		if(kbhit()) { 
 			kInf.pressed = true;
 			kInf.c = getch(); // Retrieves input.
+			while(kbhit()) {
+				getch(); // Clears all extra in the input buffer.
+			}
 			// Key press checking.
 			if(kInf.c == 27) { // A char with the value of 27 is ESC.
 				loop = false; // ESC exits the gameloop and closes the game.
@@ -144,11 +147,6 @@ void update() {
 }
 
 void manageClouds() { // Manages all cloud activity.
-	rldTimeElapsed++;
-	if(rldTimeElapsed >= RLD_TIME) {
-		rldTimeElapsed = 0;
-		reloading = false;
-	}
 	spwn.update();
 	vector<Cloud*> c = Cloud::clouds;
 	vector<int> toRemove; // Contains the index of elements that are to be removed.
@@ -177,6 +175,11 @@ void manageClouds() { // Manages all cloud activity.
 }
 
 void manageBullets() {
+	rldTimeElapsed++;
+	if(rldTimeElapsed >= RLD_TIME) {
+		rldTimeElapsed = 0;
+		reloading = false;
+	}
 	vector<int> toRemove;
 	for(int i = 0; i < Bullet::bullets.size(); i++) {
 		Bullet *b = Bullet::bullets[i];
