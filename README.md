@@ -1,5 +1,5 @@
 # CMD prompt spaceship shooter game
-Runs on windows CMD prompt.
+Runs on windows CMD prompt. Run the pre compiled game.exe
 
 <div><img width="339" height="425" alt="FE468914-90A4-4608-9069-CD01F6D7128A" src="https://github.com/user-attachments/assets/2d5d4089-5c7e-42c9-a396-ec9c52272182" /></div>
 
